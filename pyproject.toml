@@ -9,6 +9,8 @@ python = "^3.6"
 requests = "^2.25.1"
 
 [tool.poetry.dev-dependencies]
+yapf = "^0.30.0"
+isort = "^5.7.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
