@@ -1,5 +1,7 @@
 """获取帖子的内容
 """
+import sys
+import time
 from time import localtime, strftime
 from typing import *
 
@@ -8,7 +10,7 @@ from tqdm import tqdm
 
 from .api import Api, sign_request
 from .assets import AssetManager
-from .exceptions import TiebaException
+from .exceptions import RequestTooFast, TiebaException
 from .utils import dbg_dump
 
 __all__ = ("TiebaCrawler", )
@@ -24,7 +26,8 @@ class TiebaCrawler:
         self.post = post
         self.lz = lz
         self.io = open("{}.md".format(post), "at", encoding="utf-8")
-        self.progress = tqdm(desc="已收集楼层", unit="floor")
+        # 延后至 start，获取帖子标题后初始化
+        self.progress = None
         self.am = AssetManager(post)
 
         self.proxy = None
@@ -40,9 +43,8 @@ class TiebaCrawler:
 
             self.proxy = {"http": proxy, "https": proxy}
 
-    def start(self):
-        """第一次获取
-
+    def start(self, start_fid: Optional[int]):
+        """当 start_fid 为 None 时，从第一页开始抓取，否则从指定的楼层开始抓取。
         """
         data = {
             "kz": self.post,
@@ -60,20 +62,41 @@ class TiebaCrawler:
         dbg_dump(response, "start")
         if response["error_code"] != "0":
             dbg_dump(response, "start_error")
-            raise TiebaException("{}: 请求错误 ({}){}".format(
+            raise TiebaException("{}: 请求错误 ({}) {}".format(
                 self.post, response["error_code"], response["error_msg"]))
 
         title = response["post_list"][0]["title"]
         forum = response["forum"]["name"]
-        print("抓取帖子：{}/{}".format(forum, title))
+        print("抓取帖子：{}/{}".format(forum, title), file=sys.stderr)
 
-        # 第一页内容特殊处理
-        last_fid = self.handle_page(response)
+        # 延后初始化
+        self.progress = tqdm(desc="已收集楼层", unit="floor")
+
+        if start_fid:
+            last_fid = start_fid
+        else:
+            # 第一页内容特殊处理
+            last_fid = self.handle_page(response)
 
         # 后续页面
         while True:
-            last_fid, completed = self.crawl_posts(self.post, self.lz,
-                                                   last_fid)
+            try:
+                last_fid, completed = self.crawl_posts(self.post, self.lz,
+                                                       last_fid)
+            except RequestTooFast as e:
+                last_fid = e.args[0]
+                error_code = e.args[1]
+                cooldown = 180.0
+                # 帖子ID/楼层ID: (错误代码)
+                print("{}/{}: ({})".format(self.post, last_fid,
+                                                error_code),
+                      file=sys.stderr)
+                self.progress.set_description("访问过快，遭遇 ({})，等待 {} 秒继续".format(
+                    error_code, cooldown))
+                time.sleep(cooldown)
+                self.progress.set_description("已收集楼层")
+                continue
+            time.sleep(1.0)
             if completed:
                 break
 
@@ -89,7 +112,7 @@ class TiebaCrawler:
 
         :param post: 帖子 ID
         :param lz: 是否只看楼主
-        :param total_page: 楼层总数
+        :param last_fid: 上一页的最后一楼
         """
         data = {
             "kz": self.post,
@@ -108,8 +131,12 @@ class TiebaCrawler:
         dbg_dump(response, "start")
         if response["error_code"] != "0":
             dbg_dump(response, "start_error")
-            raise TiebaException("{}: 请求错误 ({}){}".format(
-                self.post, response["error_code"], response["error_msg"]))
+            ecode = response["error_code"]
+            if ecode == "239103":
+                raise RequestTooFast(last_fid, ecode)
+            else:
+                raise TiebaException("{}: 请求错误 ({}) {}".format(
+                    self.post, response["error_code"], response["error_msg"]))
 
         fid = self.handle_page(response)
 
@@ -132,7 +159,7 @@ class TiebaCrawler:
         time = item["time"]
         content = item["content"]
 
-        block = "## {floor} {date}\n\n{content}\n\n".format(
+        block = "## {floor} 楼 {date}\n\n{content}\n\n".format(
             floor=floor,
             date=strftime("%Y-%m-%d %H:%M:%S", localtime(float(time))),
             content=self.parse_content(content))

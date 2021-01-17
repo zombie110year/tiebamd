@@ -3,3 +3,6 @@ class TiebaException(Exception):
 
 class RetryExhaustedError(TiebaException):
     pass
+
+class RequestTooFast(TiebaException):
+    pass
