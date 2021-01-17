@@ -7,6 +7,7 @@ from requests import Session
 from tqdm import tqdm
 
 from .api import Api, sign_request
+from .assets import AssetManager
 from .exceptions import TiebaException
 from .utils import dbg_dump
 
@@ -24,6 +25,7 @@ class TiebaCrawler:
         self.lz = lz
         self.io = open("{}.md".format(post), "at", encoding="utf-8")
         self.progress = tqdm(desc="已收集楼层", unit="floor")
+        self.am = AssetManager(post)
 
         self.proxy = None
 
@@ -74,6 +76,13 @@ class TiebaCrawler:
                                                    last_fid)
             if completed:
                 break
+
+        self.stop()
+
+    def stop(self):
+        self.am.stop()
+        self.io.close()
+        self.progress.close()
 
     def crawl_posts(self, post: str, lz: bool, last_fid: Optional[int]):
         """抓取帖子内容
@@ -145,7 +154,8 @@ class TiebaCrawler:
                     pool.append(c["c"])
                 elif c["type"] == "3":  # 图片
                     origin_src = c["origin_src"]
-                    pool.append("![]({})".format(origin_src))
+                    filepath = self.am.download(origin_src)
+                    pool.append("![]({})".format(filepath))
             except Exception as e:
                 dbg_dump(content, "parse_content")
                 dbg_dump(c, "parse_content_c")

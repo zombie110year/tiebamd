@@ -8,6 +8,8 @@ authors = ["zombie110year <zombie110year@outlook.com>"]
 python = "^3.6"
 requests = "^2.25.1"
 tqdm = "^4.56.0"
+aiohttp = "^3.7.3"
+aiodns = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 yapf = "^0.30.0"
