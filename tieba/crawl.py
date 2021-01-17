@@ -29,6 +29,8 @@ class TiebaCrawler:
         # 延后至 start，获取帖子标题后初始化
         self.progress = None
         self.am = AssetManager(post)
+        # id => name
+        self.userdict = dict()
 
         self.proxy = None
 
@@ -67,6 +69,11 @@ class TiebaCrawler:
 
         title = response["post_list"][0]["title"]
         forum = response["forum"]["name"]
+
+        userlist = response["user_list"]
+        for user in userlist:
+            self.userdict[user["id"]] = user["name"]
+
         print("\n抓取帖子：{}/{}".format(forum, title), file=sys.stderr)
 
         # 延后初始化
@@ -145,6 +152,10 @@ class TiebaCrawler:
     def handle_page(self, page) -> int:
         fid = 0
         floors = page["post_list"]
+        userlist = page["user_list"]
+        for user in userlist:
+            self.userdict[user["id"]] = user["name"]
+
         for floor in floors:
             fid, block = self.parse_floor(floor)
             self.io.write(block)
@@ -156,12 +167,14 @@ class TiebaCrawler:
         """
         fid = int(item["id"])
         floor = int(item["floor"])
+        uid = item["author_id"]
         time = item["time"]
         content = item["content"]
 
-        block = "## {floor} 楼 {date}\n\n{content}\n\n".format(
+        block = "## {floor} 楼 {date} @{poster}\n\n{content}\n\n".format(
             floor=floor,
             date=strftime("%Y-%m-%d %H:%M:%S", localtime(float(time))),
+            poster=self.userdict.get(uid, "unknown"),
             content=self.parse_content(content))
 
         self.progress.update()
@@ -183,6 +196,11 @@ class TiebaCrawler:
                     origin_src = c["origin_src"]
                     filepath = self.am.download(origin_src)
                     pool.append("![]({})".format(filepath))
+                elif c["type"] == "4":  # @用户
+                    pool.append(c["text"])
+                else:
+                    pool.append(str(c))
+                    print("WARING: 未知的内容类型 {!r}".format(c))
             except Exception as e:
                 dbg_dump(content, "parse_content")
                 dbg_dump(c, "parse_content_c")
