@@ -91,7 +91,7 @@ class DownloadPool():
     async def download_async(self, url, filepath):
         self.tasks += 1
         async with aiohttp.ClientSession() as session:
-            self.progress.set_description("Downloading {}".format(filepath))
+            self.progress.set_description("正在下载 {}".format(filepath))
             raw = await self.get_raw(session, url)
             with open(filepath, "wb") as f:
                 f.write(raw)

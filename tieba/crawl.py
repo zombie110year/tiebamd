@@ -67,7 +67,7 @@ class TiebaCrawler:
 
         title = response["post_list"][0]["title"]
         forum = response["forum"]["name"]
-        print("抓取帖子：{}/{}".format(forum, title), file=sys.stderr)
+        print("\n抓取帖子：{}/{}".format(forum, title), file=sys.stderr)
 
         # 延后初始化
         self.progress = tqdm(desc="已收集楼层", unit="floor")
@@ -88,7 +88,7 @@ class TiebaCrawler:
                 error_code = e.args[1]
                 cooldown = 180.0
                 # 帖子ID/楼层ID: (错误代码)
-                print("{}/{}: ({})".format(self.post, last_fid,
+                print("\n{}/{}: ({})".format(self.post, last_fid,
                                                 error_code),
                       file=sys.stderr)
                 self.progress.set_description("访问过快，遭遇 ({})，等待 {} 秒继续".format(
