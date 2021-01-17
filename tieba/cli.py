@@ -15,6 +15,6 @@ def cli():
 
 def start(post: str, has_reply: bool):
     session = Session()
-    tc = TiebaCrawler(session)
     pid = post.split("/")[-1].split("?")[0] if not post.isdigit() else post
-    tc.start(pid)
+    tc = TiebaCrawler(session, pid, True)
+    tc.start()
