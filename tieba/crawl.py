@@ -25,8 +25,18 @@ class TiebaCrawler:
         self.io = open("{}.md".format(post), "at", encoding="utf-8")
         self.progress = tqdm(desc="已收集楼层", unit="floor")
 
+        self.proxy = None
+
     def __del__(self):
         self.io.close()
+
+    def set_proxy(self, proxy: Optional[str]):
+        if proxy is not None:
+            if not (proxy.startswith("http://")
+                    and proxy.startswith("https://")):
+                proxy = "http://" + proxy
+
+            self.proxy = {"http": proxy, "https": proxy}
 
     def start(self):
         """第一次获取
@@ -38,12 +48,7 @@ class TiebaCrawler:
             "_client_version": Api.ClientVersion
         }
         packet = sign_request(data, Api.SignKey)
-        resp = self.s.post(Api.PageUrl,
-                           data=packet,
-                           proxies={
-                               "http": "http://127.0.0.1:8080",
-                               "https": "http://127.0.0.1:8080"
-                           })
+        resp = self.s.post(Api.PageUrl, data=packet, proxies=self.proxy)
 
         if resp.status_code != 200:
             raise TiebaException("{}: HTTP 请求失败".format(self.post))
