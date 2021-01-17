@@ -2,7 +2,7 @@
 """
 from typing import *
 
-from requests import Session, exceptions
+from requests import Session
 
 from .api import Api, sign_request
 from .exceptions import TiebaException
@@ -22,6 +22,7 @@ class TiebaCrawler:
         self.post = post
         self.lz = lz
         self.io = open("{}.md".format(post), "at", encoding="utf-8")
+        self.progress = None
 
     def __del__(self):
         self.io.close()
@@ -30,9 +31,18 @@ class TiebaCrawler:
         """第一次获取
 
         """
-        data = {"kz": self.post, "lz": int(self.lz), "_client_version": Api.ClientVersion}
+        data = {
+            "kz": self.post,
+            "lz": int(self.lz),
+            "_client_version": Api.ClientVersion
+        }
         packet = sign_request(data, Api.SignKey)
-        resp = self.s.post(Api.PageUrl, data=packet)
+        resp = self.s.post(Api.PageUrl,
+                           data=packet,
+                           proxies={
+                               "http": "http://127.0.0.1:8080",
+                               "https": "http://127.0.0.1:8080"
+                           })
 
         if resp.status_code != 200:
             raise TiebaException("{}: HTTP 请求失败".format(self.post))
@@ -53,9 +63,10 @@ class TiebaCrawler:
         last_fid = self.handle_page(response)
 
         # 后续页面
-        while False:
-            last_fid, completed = self.crawl_posts(self.post, self.lz, last_fid)
-            if not completed:
+        while True:
+            last_fid, completed = self.crawl_posts(self.post, self.lz,
+                                                   last_fid)
+            if completed:
                 break
 
     def crawl_posts(self, post: str, lz: bool, last_fid: Optional[int]):
@@ -65,7 +76,12 @@ class TiebaCrawler:
         :param lz: 是否只看楼主
         :param total_page: 楼层总数
         """
-        data = {"kz": self.post, "lz": int(self.lz), "pid": last_fid, "_client_version": Api.ClientVersion}
+        data = {
+            "kz": self.post,
+            "lz": int(self.lz),
+            "pid": last_fid,
+            "_client_version": Api.ClientVersion
+        }
         packet = sign_request(data, Api.SignKey)
         resp = self.s.post(Api.PageUrl, data=packet)
 
@@ -96,6 +112,7 @@ class TiebaCrawler:
     def parse_floor(self, item: dict):
         """获取一个楼层的元数据和内容的原始格式
         """
+        fid = int(item["id"])
         floor = int(item["floor"])
         time = item["time"]
         content = item["content"]
@@ -105,7 +122,7 @@ class TiebaCrawler:
             date=strftime("%Y-%m-%d %H:%M:%S", localtime(float(time))),
             content=self.parse_content(content))
 
-        return floor, block
+        return fid, block
 
     def parse_content(self, content: List[Dict[str, Any]]):
         """将内容解析为 Markdown 文本
