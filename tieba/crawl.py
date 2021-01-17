@@ -1,13 +1,14 @@
 """获取帖子的内容
 """
+from time import localtime, strftime
 from typing import *
 
 from requests import Session
+from tqdm import tqdm
 
 from .api import Api, sign_request
 from .exceptions import TiebaException
 from .utils import dbg_dump
-from time import strftime, localtime
 
 __all__ = ("TiebaCrawler", )
 
@@ -22,7 +23,7 @@ class TiebaCrawler:
         self.post = post
         self.lz = lz
         self.io = open("{}.md".format(post), "at", encoding="utf-8")
-        self.progress = None
+        self.progress = tqdm(desc="已收集楼层", unit="floor")
 
     def __del__(self):
         self.io.close()
@@ -122,6 +123,7 @@ class TiebaCrawler:
             date=strftime("%Y-%m-%d %H:%M:%S", localtime(float(time))),
             content=self.parse_content(content))
 
+        self.progress.update()
         return fid, block
 
     def parse_content(self, content: List[Dict[str, Any]]):
