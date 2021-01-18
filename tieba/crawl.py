@@ -95,8 +95,7 @@ class TiebaCrawler:
                 error_code = e.args[1]
                 cooldown = 180.0
                 # 帖子ID/楼层ID: (错误代码)
-                print("\n{}/{}: ({})".format(self.post, last_fid,
-                                                error_code),
+                print("\n{}/{}: ({})".format(self.post, last_fid, error_code),
                       file=sys.stderr)
                 self.progress.set_description("访问过快，遭遇 ({})，等待 {} 秒继续".format(
                     error_code, cooldown))
@@ -188,8 +187,10 @@ class TiebaCrawler:
             try:
                 if c["type"] == "0":  # 普通文本
                     pool.append(c["text"].strip())
-                elif c["type"] == "1":  # todo 超链接
-                    pool.append(str(c))
+                elif c["type"] == "1":  # 超链接
+                    link = c["link"]
+                    text = c["text"]
+                    pool.append("[{}]({})".format(text, link))
                 elif c["type"] == "2":  # 表情，只保留说明文本
                     pool.append(c["c"])
                 elif c["type"] == "3":  # 图片
