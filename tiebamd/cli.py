@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-from functools import wraps
 
 import colorama
 from requests import Session
@@ -8,7 +7,7 @@ from .crawl import TiebaCrawler
 
 
 def cli():
-    p = ArgumentParser("tieba")
+    p = ArgumentParser("tiebamd")
     p.add_argument("post", help="帖子的链接或ID")
     p.add_argument("--repliers", action="store_true", help="是否包含回帖")
     p.add_argument("--http-proxy", help="指定 HTTP 代理，例如 http://127.0.0.1:8080")

@@ -8,8 +8,8 @@
 
 .. code:: sh
 
-    pip install tieba
-    pipx install tieba
+    pip install tiebamd
+    pipx install tiebamd
 
 使用方法
 ========
@@ -17,10 +17,10 @@
 .. code:: sh
 
     # 默认只下载楼主发布的楼层
-    tieba https://tieba.baidu.com/p/1766018024
+    tiebamd https://tieba.baidu.com/p/1766018024
 
     # 包含所有回帖（楼中楼除外）
-    tieba https://tieba.baidu.com/p/1766018024 --repliers
+    tiebamd https://tieba.baidu.com/p/1766018024 --repliers
 
 除此之外，还有两个命令行参数可以使用：
 
@@ -45,7 +45,7 @@ xxxx 表示帖子 ID，yyyy 表示楼层 ID，zzzz 表示错误代码。
 .. code:: sh
 
     # 这将从目标帖子的第 381 楼开始下载
-    tieba https://tieba.baidu.com/p/1766018024 --start-fid 22754385957
+    tiebamd https://tieba.baidu.com/p/1766018024 --start-fid 22754385957
 
 
 如果反复遇到相同的错误或者开发者无法重现，可以将环境变量 :code:`DEBUG` 的值设为 :code:`1`，然后再次运行。这会在当前工作目录下生成 :code:`debug_xxx_error.json` 文件，记录了几处请求信息，可以将其提交到 issue 方便开发者调试。
@@ -53,13 +53,13 @@ xxxx 表示帖子 ID，yyyy 表示楼层 ID，zzzz 表示错误代码。
 .. code:: sh
 
     # bash/zsh 等 Unix Shell
-    DEBUG=1 tieba https://tieba.baidu.com/p/1766018024
+    DEBUG=1 tiebamd https://tieba.baidu.com/p/1766018024
     # powershell
     $env:DEBUG = 1
-    tieba https://tieba.baidu.com/p/1766018024
+    tiebamd https://tieba.baidu.com/p/1766018024
     # cmd.exe
     set DEBUG=1
-    tieba https://tieba.baidu.com/p/1766018024
+    tiebamd https://tieba.baidu.com/p/1766018024
 
 示例
 ====
@@ -68,7 +68,7 @@ xxxx 表示帖子 ID，yyyy 表示楼层 ID，zzzz 表示错误代码。
 
 .. code:: sh
 
-    tieba https://tieba.baidu.com/p/1766018024
+    tiebamd https://tieba.baidu.com/p/1766018024
 
     0it [00:00, ?it/s]
     抓取帖子：minecraft/直播，MC 1.3 原版生存

@@ -1,18 +1,18 @@
 [tool.poetry]
-name = "tiebaMD"
-version = "0.1.0"
+name = "tiebamd"
+version = "0.1.1"
 description = "指定下载百度贴吧的某个帖子为 Markdown 文件"
 authors = ["zombie110year <zombie110year@outlook.com>"]
 readme = "README.rst"
 license = "GPL-3.0-only"
 
-homepage = "https://github.com/zombie110year/tieba"
+homepage = "https://github.com/zombie110year/tiebamd"
 packages = [
-    { include = "tieba" },
+    { include = "tiebamd" },
 ]
 
 [tool.poetry.scripts]
-tieba = "tieba.cli:cli"
+tiebamd = "tiebamd.cli:cli"
 
 [tool.poetry.dependencies]
 python = "^3.6"

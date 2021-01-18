@@ -11,7 +11,6 @@ from colorama import Fore
 from requests import Session
 from tqdm import tqdm
 
-
 from .api import Api, sign_request
 from .assets import AssetManager
 from .exceptions import RequestTooFast, TiebaException

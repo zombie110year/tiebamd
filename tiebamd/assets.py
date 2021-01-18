@@ -4,12 +4,12 @@ import asyncio
 import threading
 import time
 from functools import wraps
-from pathlib import PurePath, Path
+from pathlib import Path, PurePath
 
 import aiohttp
 from tqdm import tqdm
 
-from tieba.exceptions import RetryExhaustedError
+from .exceptions import RetryExhaustedError
 
 
 def retry(*exceptions, retries=5, cooldown=1):
