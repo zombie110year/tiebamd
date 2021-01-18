@@ -200,7 +200,7 @@ class TiebaCrawler:
                     text = c["text"]
                     pool.append("[{}]({})".format(text, link))
                 elif c["type"] == "2":  # 表情，只保留说明文本
-                    pool.append(c["c"])
+                    pool.append("【{}】".format(c["c"]))
                 elif c["type"] == "3":  # 图片
                     origin_src = c["origin_src"]
                     refpath = self.am.download(origin_src)
