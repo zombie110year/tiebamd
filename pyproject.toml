@@ -3,6 +3,16 @@ name = "tiebaMD"
 version = "0.1.0"
 description = "指定下载百度贴吧的某个帖子为 Markdown 文件"
 authors = ["zombie110year <zombie110year@outlook.com>"]
+readme = "README.rst"
+license = "MIT"
+
+homepage = "https://github.com/zombie110year/tieba"
+packages = [
+    { include = "tieba" },
+]
+
+[tool.poetry.scripts]
+tieba = "tieba.cli:cli"
 
 [tool.poetry.dependencies]
 python = "^3.6"
