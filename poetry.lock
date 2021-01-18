@@ -131,7 +131,7 @@ reference = "aliyun"
 name = "colorama"
 version = "0.4.4"
 description = "Cross-platform colored terminal text."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -502,7 +502,7 @@ reference = "aliyun"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "e182dc124b076ae8c9b77accaca2e1a9619e177ad057b93de75a2e14152b86c6"
+content-hash = "ed12e0d76935a8300890534d75ae02bb35280278cfdf1c61434a2d1bf60f94d3"
 
 [metadata.files]
 aiodns = [

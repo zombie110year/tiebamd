@@ -1,7 +1,10 @@
 from argparse import ArgumentParser
+from functools import wraps
+
+import colorama
+from requests import Session
 
 from .crawl import TiebaCrawler
-from requests import Session
 
 
 def cli():
@@ -23,6 +26,8 @@ def start(args):
     start_fid = args.start_fid
 
     pid = post.split("/")[-1].split("?")[0] if not post.isdigit() else post
+
+    colorama.init(autoreset=True)
     tc = TiebaCrawler(session, pid, not has_reply)
     tc.set_proxy(proxy)
     tc.start(start_fid)
