@@ -39,7 +39,7 @@ class AssetManager:
     """处理除文本外资源的下载能力
     """
     def __init__(self, post: str):
-        self.directory = post
+        self.directory = "{}.textbundle/assets".format(post)
         if not Path(self.directory).exists():
             Path(self.directory).mkdir(exist_ok=True, parents=True)
         self.pool = DownloadPool()
@@ -50,7 +50,7 @@ class AssetManager:
 
         self.pool.download(url, filepath)
 
-        return filepath
+        return "assets/{}".format(filename)
 
     def stop(self):
         self.pool.stop()

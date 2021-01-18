@@ -1,7 +1,9 @@
 """获取帖子的内容
 """
+import json
 import sys
 import time
+from pathlib import Path
 from time import localtime, strftime
 from typing import *
 
@@ -25,7 +27,12 @@ class TiebaCrawler:
         self.s = session
         self.post = post
         self.lz = lz
-        self.io = open("{}.md".format(post), "at", encoding="utf-8")
+        self.directory = "{}.textbundle".format(post)
+        if not Path(self.directory).exists():
+            Path(self.directory).mkdir(parents=True, exist_ok=True)
+        self.io = open("{}/text.markdown".format(self.directory),
+                       "at",
+                       encoding="utf-8")
         # 延后至 start，获取帖子标题后初始化
         self.progress = None
         self.am = AssetManager(post)
@@ -112,6 +119,7 @@ class TiebaCrawler:
         self.am.stop()
         self.io.close()
         self.progress.close()
+        self.generate_metainfo()
 
     def crawl_posts(self, post: str, lz: bool, last_fid: Optional[int]):
         """抓取帖子内容
@@ -195,8 +203,8 @@ class TiebaCrawler:
                     pool.append(c["c"])
                 elif c["type"] == "3":  # 图片
                     origin_src = c["origin_src"]
-                    filepath = self.am.download(origin_src)
-                    pool.append("![]({})".format(filepath))
+                    refpath = self.am.download(origin_src)
+                    pool.append("![]({})".format(refpath))
                 elif c["type"] == "4":  # @用户
                     pool.append(c["text"])
                 else:
@@ -207,3 +215,15 @@ class TiebaCrawler:
                 dbg_dump(c, "parse_content_c")
                 raise e
         return "\n".join(pool)
+
+    def generate_metainfo(self):
+        info = {
+            "version": 2,
+            "type": "net.daringfireball.markdown",
+            "transient": False,
+            "creatorURL": "file:///{}".format(Path(sys.executable).as_posix()),
+            "creatorIdentifier": "github.com/zombie110year/tieba",
+            "sourceURL": "https://tieba.baidu.com/p/{}".format(self.post)
+        }
+        info_txt = json.dumps(info, indent=2)
+        (Path(self.directory) / "info.json").write_text(info_txt)
