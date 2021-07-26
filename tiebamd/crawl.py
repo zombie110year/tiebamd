@@ -208,6 +208,8 @@ class TiebaCrawler:
                     pool.append("![]({})".format(refpath))
                 elif c["type"] == "4":  # @用户
                     pool.append(c["text"])
+                elif c["type"] == "9":  # 电话号码
+                    pool.append(c["text"])
                 else:
                     pool.append(str(c))
                     print("WARING: 未知的内容类型 {!r}".format(c))
