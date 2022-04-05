@@ -8,13 +8,14 @@
             "name": "Run",
             "request": "launch",
             "type": "python",
-            "program": "debug_.py",
+            "program": "debug_tiebamd.py",
             "env": {
                 "DEBUG": "1",
-                "PYTHONUTF8": "1"
+                "PYTHONUTF8": "1",
+                "PYTHONPATH": "__pypackages__/3.10/lib"
             },
             "args": [
-                "1766018024",
+                "3135213351",
             ],
             "console": "integratedTerminal"
         }

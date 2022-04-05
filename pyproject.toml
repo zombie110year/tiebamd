@@ -1,37 +1,32 @@
-[tool.poetry]
+[project]
 name = "tiebamd"
 version = "0.1.1"
 description = "指定下载百度贴吧的某个帖子为 Markdown 文件"
-authors = ["zombie110year <zombie110year@outlook.com>"]
-readme = "README.rst"
-license = "GPL-3.0-only"
-
-homepage = "https://github.com/zombie110year/tiebamd"
-packages = [
-    { include = "tiebamd" },
+authors = [{ name = "zombie110year", email = "zombie110year@outlook.com" }]
+dependencies = [
+    "aiohttp==3.8.1",
+    "requests>=2.27.1",
+    "aiodns>=3.0.0",
+    "colorama>=0.4.4",
+    "tqdm>=4.64.0",
 ]
+requires-python = ">=3.10"
+license = { text = "GPL-3.0-only" }
+readme = "README.rst"
 
-[tool.poetry.scripts]
-tiebamd = "tiebamd.cli:cli"
+[project.urls]
+Homepage = "https://github.com/zombie110year/tiebamd"
 
-[tool.poetry.dependencies]
-python = "^3.6"
-requests = "^2.25.1"
-tqdm = "^4.56.0"
-aiohttp = "^3.7.3"
-aiodns = "^2.0.0"
-colorama = "^0.4.4"
+[project.scripts]
 
-[tool.poetry.dev-dependencies]
-yapf = "^0.30.0"
-isort = "^5.7.0"
-pytest = "^6.2.1"
+[project.optional-dependencies]
+[tool.pdm]
+[tool.pdm.scripts]
+tiebamd = { call = "tiebamd.cli:cli" }
+
+[tool.pdm.dev-dependencies]
+dev = ["yapf>=0.32.0", "isort>=5.10.1", "pytest>=7.1.1"]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[[tool.poetry.source]]
-name = "aliyun"
-url = "https://mirrors.aliyun.com/pypi/simple"
-default = true
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"

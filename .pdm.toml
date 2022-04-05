@@ -1,0 +1,5 @@
+[pypi]
+url = "https://mirrors.aliyun.com/pypi/simple"
+
+[python]
+path = "C:\\Users\\zom\\scoop\\apps\\python\\current\\python.EXE"
