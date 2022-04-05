@@ -158,6 +158,7 @@ class TiebaCrawler:
         return fid, last_fid == fid
 
     def handle_page(self, page) -> int:
+        "处理抓取到的页面，将其写入 Markdown 文件"
         fid = 0
         floors = page["post_list"]
         userlist = page["user_list"]
@@ -171,7 +172,7 @@ class TiebaCrawler:
         return fid
 
     def parse_floor(self, item: dict):
-        """获取一个楼层的元数据和内容的原始格式
+        """将 JSON 格式的抓取内容解析为 Markdown 文本
         """
         fid = int(item["id"])
         floor = int(item["floor"])
@@ -220,12 +221,13 @@ class TiebaCrawler:
         return "\n".join(pool)
 
     def generate_metainfo(self):
+        "生成 textbundle 元数据"
         info = {
             "version": 2,
             "type": "net.daringfireball.markdown",
             "transient": False,
             "creatorURL": "file:///{}".format(Path(sys.executable).as_posix()),
-            "creatorIdentifier": "github.com/zombie110year/tieba",
+            "creatorIdentifier": "github.com/zombie110year/tiebamd",
             "sourceURL": "https://tieba.baidu.com/p/{}".format(self.post)
         }
         info_txt = json.dumps(info, indent=2)
