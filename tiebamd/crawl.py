@@ -48,7 +48,7 @@ class TiebaCrawler:
     def set_proxy(self, proxy: Optional[str]):
         if proxy is not None:
             if not (proxy.startswith("http://")
-                    and proxy.startswith("https://")):
+                    or proxy.startswith("https://")):
                 proxy = "http://" + proxy
 
             self.proxy = {"http": proxy, "https": proxy}
